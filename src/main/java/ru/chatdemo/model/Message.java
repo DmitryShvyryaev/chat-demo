@@ -15,6 +15,7 @@ public class Message {
 
     public Message(String username, LocalDateTime dateTime, String content) {
         this.username = username;
+        this.dateTime = dateTime;
         this.content = content;
     }
 }

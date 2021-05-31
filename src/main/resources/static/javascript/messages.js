@@ -1,9 +1,20 @@
 $( document ).ready(function() {
     updateMessages();
-    $.ajaxSetup({cache: false});
+    $('#send-message').click(function() {
+        $.ajax({
+            url: '/rest/messages',
+            type: 'POST',
+            data: $('#content').serialize(),
+            success: function(msg) {
+                $('#inoutMessage').val("");
+                updateMessages();
+            }
+        });
+    });
 });
 
 function updateMessages() {
+    $('#chat').empty();
     $.ajax({
         type: "GET",
         url: "/rest/messages",
@@ -29,7 +40,7 @@ function renderMessage(data) {
     })
         .append($('<span>', {
         'class': "message-data-time",
-        text: data['username']
+        text: data['username'] + ', ' + data['dateTime']
         })
     ))
         .append($('<div>', {
@@ -38,22 +49,11 @@ function renderMessage(data) {
     })));
 }
 
-function sendMessage() {
-    $.ajax({
-        type: "POST",
-        url: "/rest/messages",
-        data: $('#content').serialize(),
-        success: updateMessages(),
-        error: function () {
-            console.log('error with send form');
-        }
-    });
-}
+// setInterval(updateMessages, 1000);
 
 function scroll() {
-    $('html, body').animate({
-        scrollTop: $("#inoutMessage").offset().top
-    }, 1000);
+    console.log("SCROLL");
+    $("#chat").scrollTop($('#chat')[0].scrollHeight);
 }
 
 
