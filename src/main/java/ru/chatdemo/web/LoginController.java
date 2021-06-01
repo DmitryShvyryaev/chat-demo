@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.chatdemo.model.User;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @AllArgsConstructor
 @Slf4j
@@ -52,10 +54,13 @@ public class LoginController {
     }
 
     @PostMapping(value = "/security-check")
-    public String enterChat(User user) {
+    public String enterChat(User user, HttpSession session) {
         log.info("Security check user {}", user);
-        loggedUser.setName(user.getName());
-        loggedUser.setStatus(user.getStatus());
+
+        session.setAttribute("loggedUser", user);
+
+//        loggedUser.setName(user.getName());
+//        loggedUser.setStatus(user.getStatus());
         return "redirect:messages";
     }
 
