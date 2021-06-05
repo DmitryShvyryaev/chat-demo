@@ -49,6 +49,19 @@ function renderMessage(data) {
     })));
 }
 
+function renderUser(data) {
+    $('#users-list').append($('<li>', {
+        'class': "clearfix"
+    }).append())
+}
+
+<li className="clearfix active">
+    <div className="about">
+        <div className="name">Aiden Chavez</div>
+        <div className="status"><i className="fa fa-circle online"></i> online</div>
+    </div>
+</li>
+
 // setInterval(updateMessages, 1000);
 
 function scroll() {

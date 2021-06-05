@@ -2,25 +2,32 @@ package ru.chatdemo.web;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.chatdemo.model.User;
+import ru.chatdemo.util.UserValidator;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @Controller
 @AllArgsConstructor
 @Slf4j
 public class LoginController {
 
-    private final User loggedUser;
+    private final SessionListener sessionListener;
+
+    private final UserValidator userValidator;
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(userValidator);
+    }
 
     @GetMapping("/")
     public String root() {
@@ -29,43 +36,42 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(HttpSession session) {
         log.info("Get login page");
-        if (isAuthorized()) {
+        User user = (User) session.getAttribute("loggedUser");
+        if (isAuthorized(user)) {
             return "redirect:messages";
         }
         return "login";
     }
 
     @GetMapping("/messages")
-    public String getMessages(Model model) {
+    public String getMessages(Model model, HttpSession session) {
         log.info("Get messages page");
-        if (!isAuthorized())
+        User user = (User) session.getAttribute("loggedUser");
+        if (!isAuthorized(user))
             return "redirect:login";
-        model.addAttribute("user", loggedUser);
+        model.addAttribute("user", user);
         return "messages";
     }
 
     @PostMapping("/logout")
-    public String logout() {
+    public String logout(HttpSession session) {
         log.info("Logout");
-        loggedUser.destroy();
+        session.invalidate();
         return "redirect:login";
     }
 
     @PostMapping(value = "/security-check")
-    public String enterChat(User user, HttpSession session) {
+    public String enterChat(@Valid User user, HttpSession session) {
         log.info("Security check user {}", user);
-
+        sessionListener.add(session, user);
         session.setAttribute("loggedUser", user);
-
-//        loggedUser.setName(user.getName());
-//        loggedUser.setStatus(user.getStatus());
         return "redirect:messages";
     }
 
-    private boolean isAuthorized() {
-        log.info("Check authorized");
-        return loggedUser != null && StringUtils.hasLength(loggedUser.getName());
+    private boolean isAuthorized(User user) {
+        log.info("Check authorized for user {}", user);
+        return user != null && StringUtils.hasLength(user.getName());
     }
 }
