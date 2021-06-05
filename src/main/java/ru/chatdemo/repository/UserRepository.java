@@ -1,7 +1,8 @@
-package ru.chatdemo.web;
+package ru.chatdemo.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.chatdemo.exception.NotFoundException;
 import ru.chatdemo.model.User;
 
 import javax.servlet.http.HttpSession;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class SessionListener implements HttpSessionListener {
+public class UserRepository implements HttpSessionListener {
 
     private final Map<String, User> activeUsers = new ConcurrentHashMap<>();
 
@@ -26,11 +27,15 @@ public class SessionListener implements HttpSessionListener {
         activeUsers.remove(se.getSession().getId());
     }
 
-    public void add(HttpSession session, User user) {
-        activeUsers.put(session.getId(), user);
+    public User add(HttpSession session, User user) {
+        return activeUsers.put(session.getId(), user);
     }
 
     public Collection<User> getAllUsers() {
         return activeUsers.values();
+    }
+
+    public User getBySession(HttpSession session) {
+        return activeUsers.computeIfAbsent(session.getId(), s -> {throw new NotFoundException("Not found user in session with id " + session.getId());});
     }
 }

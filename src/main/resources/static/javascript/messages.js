@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+    updateProfile();
     updateMessages();
     $('#send-message').click(function() {
         $.ajax({
@@ -14,7 +15,6 @@ $( document ).ready(function() {
 });
 
 function updateMessages() {
-    $('#chat').empty();
     $.ajax({
         type: "GET",
         url: "/rest/messages",
@@ -22,7 +22,6 @@ function updateMessages() {
             updateMessagesByData(response);
         }
     });
-    scroll();
 }
 
 function updateUsers() {
@@ -33,6 +32,17 @@ function updateUsers() {
             updateMessagesByData(response);
         }
     });
+}
+
+function updateProfile() {
+    $.ajax({
+        type: "GET",
+        url: "/rest/users/profile",
+        success: function (response) {
+            $('#user-name').text(response['name']);
+            $('#user-status').text(response['status']);
+        }
+    })
 }
 
 function updateMessagesByData(response) {

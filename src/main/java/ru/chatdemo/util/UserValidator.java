@@ -4,15 +4,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.chatdemo.model.User;
-import ru.chatdemo.web.SessionListener;
+import ru.chatdemo.repository.UserRepository;
 
 @Component
 public class UserValidator implements Validator {
 
-    private final SessionListener sessionListener;
+    private final UserRepository userRepository;
 
-    public UserValidator(SessionListener sessionListener) {
-        this.sessionListener = sessionListener;
+    public UserValidator(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class UserValidator implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         User user= (User) o;
-        User duplicate = sessionListener.getAllUsers().stream()
+        User duplicate = userRepository.getAllUsers().stream()
                 .filter(u -> u.getName().equalsIgnoreCase(user.getName()))
                 .findAny().orElse(null);
         if (duplicate != null) {
