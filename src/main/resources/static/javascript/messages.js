@@ -25,25 +25,38 @@ function updateMessages() {
     scroll();
 }
 
+function updateUsers() {
+    $.ajax({
+        type: "GET",
+        url: "/rest/messages",
+        success: function(response){
+            updateMessagesByData(response);
+        }
+    });
+}
+
 function updateMessagesByData(response) {
     for (let i = 0; i < response.length; i++) {
         renderMessage(response[i]);
     }
 }
 
+function updateUsersByData(response) {
+    for (let i = 0; i < response.length; i++) {
+        renderUser(response[i]);
+    }
+}
+
 function renderMessage(data) {
     $('#chat').append($('<li>', {
         'class': "clearfix"
-    })
-        .append($('<div>', {
+    }).append($('<div>', {
         'class': data['username'] === username ? "message-data" : "message-data text-right"
-    })
-        .append($('<span>', {
+    }).append($('<span>', {
         'class': "message-data-time",
         text: data['username'] + ', ' + data['dateTime']
         })
-    ))
-        .append($('<div>', {
+    )).append($('<div>', {
         'class': data['username'] === username ? "message my-message" : "message other-message float-right",
         text: data['content']
     })));
@@ -52,15 +65,16 @@ function renderMessage(data) {
 function renderUser(data) {
     $('#users-list').append($('<li>', {
         'class': "clearfix"
-    }).append())
+    }).append($('<div>', {
+        'class': "about"
+    }).append($('<div>', {
+        'class': "name",
+        text: data['name']
+    })).append($('<div>', {
+        'class': "status",
+        text: data['status']
+    }))));
 }
-
-<li className="clearfix active">
-    <div className="about">
-        <div className="name">Aiden Chavez</div>
-        <div className="status"><i className="fa fa-circle online"></i> online</div>
-    </div>
-</li>
 
 // setInterval(updateMessages, 1000);
 

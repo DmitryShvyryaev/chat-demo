@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping(value = "/rest/messages", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @Slf4j
-public class MessagesController {
+public class MessageController {
 
     private final MessageService service;
 
