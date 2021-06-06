@@ -1,35 +1,31 @@
-$( document ).ready(function() {
+let username;
+
+$(document).ready(function () {
     updateProfile();
+    updateUsers();
     updateMessages();
-    $('#send-message').click(function() {
-        $.ajax({
-            url: '/rest/messages',
-            type: 'POST',
-            data: $('#content').serialize(),
-            success: function(msg) {
-                $('#inoutMessage').val("");
-                updateMessages();
-            }
-        });
-    });
 });
 
 function updateMessages() {
     $.ajax({
         type: "GET",
         url: "/rest/messages",
-        success: function(response){
+        success: function (response) {
             updateMessagesByData(response);
         }
     });
 }
 
 function updateUsers() {
+    $('#users-list').empty();
     $.ajax({
         type: "GET",
-        url: "/rest/messages",
-        success: function(response){
-            updateMessagesByData(response);
+        url: "/rest/users",
+        success: function (response) {
+            for (let i = 0; i < response.length; i++) {
+                if (response[i]['name'] !== username)
+                    renderUser(response[i]);
+            }
         }
     });
 }
@@ -39,9 +35,18 @@ function updateProfile() {
         type: "GET",
         url: "/rest/users/profile",
         success: function (response) {
+            username = response['name'];
             $('#user-name').text(response['name']);
             $('#user-status').text(response['status']);
         }
+    })
+}
+
+function logout() {
+    $.ajax({
+        type: "DELETE",
+        url: "/rest/users/logout",
+        success: window.location = "http://localhost:8080/login"
     })
 }
 
@@ -51,20 +56,14 @@ function updateMessagesByData(response) {
     }
 }
 
-function updateUsersByData(response) {
-    for (let i = 0; i < response.length; i++) {
-        renderUser(response[i]);
-    }
-}
-
 function renderMessage(data) {
     $('#chat').append($('<li>', {
         'class': "clearfix"
     }).append($('<div>', {
         'class': data['username'] === username ? "message-data" : "message-data text-right"
     }).append($('<span>', {
-        'class': "message-data-time",
-        text: data['username'] + ', ' + data['dateTime']
+            'class': "message-data-time",
+            text: data['username'] + ', ' + data['dateTime']
         })
     )).append($('<div>', {
         'class': data['username'] === username ? "message my-message" : "message other-message float-right",
@@ -82,8 +81,24 @@ function renderUser(data) {
         text: data['name']
     })).append($('<div>', {
         'class': "status",
-        text: data['status']
-    }))));
+        text: " " + data['status']
+    }).prepend($('<i>', {
+        'class': "fa fa-circle online"
+    })))));
+}
+
+function sendMessage() {
+    $.ajax({
+        url: '/rest/messages',
+        type: 'POST',
+        data: $('#content').serialize(),
+        success: function (msg) {
+            $('#inoutMessage').val("");
+            updateMessages();
+        }
+    });
+    updateUsers();
+    updateMessages();
 }
 
 // setInterval(updateMessages, 1000);

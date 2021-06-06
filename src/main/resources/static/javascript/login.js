@@ -1,7 +1,11 @@
-function save() {
+function login() {
     $.ajax({
         type: "POST",
-        url: "/security-check",
-        data: $('#login-form').serialize()
+        url: "/rest/users",
+        data: $('#login-form').serialize(),
+        success: function () {
+            console.log("SECCES");
+            window.location = "http://localhost:8080/messages";
+        }
     });
 }

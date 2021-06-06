@@ -28,6 +28,7 @@ public class UserRepository implements HttpSessionListener {
     }
 
     public User add(HttpSession session, User user) {
+        session.setAttribute("loggedUser", user);
         return activeUsers.put(session.getId(), user);
     }
 
