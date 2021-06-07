@@ -1,12 +1,14 @@
 package ru.chatdemo.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Arrays;
 
 @Data
+@AllArgsConstructor
 public class ErrorJson {
-    private String url;
+    private CharSequence url;
     private String type;
     private String[] details;
 
