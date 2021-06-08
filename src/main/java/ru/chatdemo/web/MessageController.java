@@ -25,7 +25,6 @@ public class MessageController {
 
     @GetMapping
     public List<MessageTo> getAll() {
-        log.info("Get all messages");
         return service.getAll();
     }
 

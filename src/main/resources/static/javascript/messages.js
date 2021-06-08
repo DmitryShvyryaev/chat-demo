@@ -1,6 +1,9 @@
 let username;
 
 $(document).ready(function () {
+    $(document).ajaxError(function (event, jqXHR, options, jsExc) {
+        failNoty(jqXHR);
+    });
     updateProfile();
     updateUsers();
     updateMessages();

@@ -18,7 +18,7 @@ import java.util.Collection;
 @RequestMapping(value = "/rest/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @Slf4j
-public class UserController {
+public class RestUserController {
 
     private final UserRepository repository;
 
@@ -31,7 +31,6 @@ public class UserController {
 
     @GetMapping
     public Collection<User> getAll() {
-        log.info("Get all users");
         return repository.getAllUsers();
     }
 
@@ -45,7 +44,7 @@ public class UserController {
     public ResponseEntity<User> create(@Valid User user, HttpSession session) {
         log.info("Enter chat system with user {}", user);
         User created = repository.add(session, user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(created);
     }
 
     @DeleteMapping("/logout")
