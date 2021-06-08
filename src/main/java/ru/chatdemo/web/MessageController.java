@@ -28,6 +28,16 @@ public class MessageController {
         return service.getAll();
     }
 
+    @GetMapping("/last-part")
+    public List<MessageTo> getLastPart() {
+        return service.getLastPart();
+    }
+
+    @GetMapping("/update")
+    public List<MessageTo> getAfterLimit(@RequestParam Long maxId) {
+        return service.getAfterLimit(maxId);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(Message message, HttpSession session) {
@@ -35,6 +45,6 @@ public class MessageController {
         log.info("Create new Message {} of User {}", message, user);
         message.setUsername(user.getName());
         message.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-        service.insert(message);
+        service.save(message);
     }
 }

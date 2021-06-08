@@ -5,29 +5,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.chatdemo.model.Message;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
 public class MessageRepository {
 
-    private List<Message> repository = Collections.synchronizedList(new ArrayList<Message>());
+    private final Map<Long, Message> repository = new ConcurrentHashMap<>();
 
-    public List<Message> getAll() {
-        return repository;
+    private final AtomicLong counter = new AtomicLong(10000);
+
+    public Collection<Message> getAll() {
+        return repository.values();
     }
 
-    public void insert(Message message) {
-        repository.add(message);
-        resize();
+    public Message save(Message message) {
+        message.setId(counter.getAndIncrement());
+        repository.put(message.getId(), message);
+        return message;
     }
 
-    private synchronized void resize() {
-        if (repository.size() > 150) {
-            repository = repository.stream().skip(50)
-                    .collect(Collectors.toList());
-        }
+    public Long getCounter() {
+        return counter.get();
     }
 }
