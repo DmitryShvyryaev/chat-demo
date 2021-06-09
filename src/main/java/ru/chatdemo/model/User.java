@@ -6,6 +6,7 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Data
 @SessionScope
@@ -20,8 +21,24 @@ public class User {
     @Size(min = 1, max = 30)
     private String status;
 
-    public void destroy() {
-        this.name = "";
-        this.status = "";
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return name.equals(user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

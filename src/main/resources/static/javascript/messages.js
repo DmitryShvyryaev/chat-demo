@@ -1,36 +1,77 @@
 let username;
+let maxMessageId = 0;
+let maxUsersId = 0;
 
 $(document).ready(function () {
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
     });
     updateProfile();
-    updateUsers();
-    updateMessages();
+    getUsers();
+    $.ajax({
+        type: "GET",
+        url: "/rest/messages/last-part",
+        success: function (response) {
+            updateMessagesByData(response);
+        }
+    });
+    setInterval(update, 5000);
 });
 
 function updateMessages() {
     $.ajax({
         type: "GET",
-        url: "/rest/messages",
+        url: "/rest/messages/update",
+        data: {maxId: maxMessageId},
         success: function (response) {
             updateMessagesByData(response);
         }
     });
 }
 
-function updateUsers() {
-    $('#users-list').empty();
+function updateMessagesByData(response) {
+    for (let i = 0; i < response.length; i++) {
+        if (response[i]['id'] > maxMessageId)
+            maxMessageId = response[i]['id'];
+        renderMessage(response[i]);
+    }
+}
+
+function getUsers() {
     $.ajax({
         type: "GET",
         url: "/rest/users",
         success: function (response) {
-            for (let i = 0; i < response.length; i++) {
-                if (response[i]['name'] !== username)
-                    renderUser(response[i]);
+            maxUsersId = response['versionID'];
+            for (let i = 0; i < response['users'].length; i++) {
+                renderUser(response['users'][i]);
             }
         }
     });
+}
+
+function updateUsers() {
+    $.ajax({
+        type: "GET",
+        url: "/rest/users/update",
+        data: {maxId: maxUsersId},
+        success: function (response) {
+            for (let i = 0; i < response.length; i++) {
+                if (response[i]['id'] > maxUsersId) maxUsersId = response[i]['id'];
+                if (response[i]['action'] === "DELETE") {
+                    let blockName = "#" + response[i]['user']['name'] + "-block";
+                    $(blockName).remove();
+                } else {
+                    renderUser(response[i]['user']);
+                }
+            }
+        }
+    });
+}
+
+function update() {
+    updateUsers();
+    updateMessages();
 }
 
 function updateProfile() {
@@ -43,20 +84,6 @@ function updateProfile() {
             $('#user-status').text(response['status']);
         }
     })
-}
-
-function logout() {
-    $.ajax({
-        type: "DELETE",
-        url: "/rest/users/logout",
-        success: window.location = "http://localhost:8080/login"
-    })
-}
-
-function updateMessagesByData(response) {
-    for (let i = 0; i < response.length; i++) {
-        renderMessage(response[i]);
-    }
 }
 
 function renderMessage(data) {
@@ -76,6 +103,7 @@ function renderMessage(data) {
 
 function renderUser(data) {
     $('#users-list').append($('<li>', {
+        'id': data['name'] + "-block",
         'class': "clearfix"
     }).append($('<div>', {
         'class': "about"
@@ -98,13 +126,18 @@ function sendMessage() {
         success: function (msg) {
             $('#inoutMessage').val("");
             updateMessages();
+            updateUsers();
         }
     });
-    updateUsers();
-    updateMessages();
 }
 
-// setInterval(updateMessages, 1000);
+function logout() {
+    $.ajax({
+        type: "DELETE",
+        url: "/rest/users/logout",
+        success: window.location = "http://localhost:8080/login"
+    })
+}
 
 function scroll() {
     console.log("SCROLL");

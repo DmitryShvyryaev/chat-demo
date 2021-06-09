@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import ru.chatdemo.model.User;
 
 import javax.servlet.http.HttpSession;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Controller
 @AllArgsConstructor

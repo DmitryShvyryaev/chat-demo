@@ -7,12 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ru.chatdemo.model.User;
+import ru.chatdemo.model.UserEvent;
 import ru.chatdemo.repository.UserRepository;
+import ru.chatdemo.to.UserListTo;
 import ru.chatdemo.util.UserValidator;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/rest/users", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -30,8 +33,13 @@ public class RestUserController {
     }
 
     @GetMapping
-    public Collection<User> getAll() {
-        return repository.getAllUsers();
+    public UserListTo getAll(HttpSession session) {
+        return repository.getUserListTo(repository.getBySession(session));
+    }
+
+    @GetMapping("/update")
+    public List<UserEvent> getUserEvents(Long maxId, HttpSession session) {
+        return repository.getEvents(maxId);
     }
 
     @GetMapping("/profile")
