@@ -25,6 +25,7 @@ function updateMessages() {
         data: {maxId: maxMessageId},
         success: function (response) {
             updateMessagesByData(response);
+            scroll();
         }
     });
 }
@@ -141,7 +142,7 @@ function logout() {
 
 function scroll() {
     console.log("SCROLL");
-    $("#chat").scrollTop($('#chat')[0].scrollHeight);
+    $("#chat-history").scrollTop($('#chat-history')[0].scrollHeight);
 }
 
 
