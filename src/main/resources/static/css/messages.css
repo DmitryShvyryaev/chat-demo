@@ -34,7 +34,7 @@ body{
 }
 
 .people-list .chat-list li {
-    padding: 10px 15px;
+    padding: 5px 5px;
     list-style: none;
     border-radius: 3px
 }
@@ -49,7 +49,7 @@ body{
 }
 
 .people-list .chat-list li .name {
-    font-size: 12px
+    font-size: 15px
 }
 
 .people-list .chat-list img {
