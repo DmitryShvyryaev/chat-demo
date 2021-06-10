@@ -4,7 +4,7 @@ function login() {
         url: "/rest/users",
         data: $('#login-form').serialize(),
         success: function () {
-            window.location = "http://localhost:8080/messages";
+            window.location.href = "../messages";
         },
         error: function (data) {
             $('ul').remove();

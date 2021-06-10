@@ -136,7 +136,7 @@ function logout() {
     $.ajax({
         type: "DELETE",
         url: "/rest/users/logout",
-        success: window.location = "http://localhost:8080/login"
+        success: window.location.href = "../login"
     })
 }
 
