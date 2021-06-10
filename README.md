@@ -8,3 +8,6 @@
 - клонируейте репозиторий;
 - соберите с Maven (install);
 - запустите через Main в классе ChatDemoApplication
+
+Ссылка на heroku: 
+https://chatroom-demo-shvyryaev.herokuapp.com/messages
