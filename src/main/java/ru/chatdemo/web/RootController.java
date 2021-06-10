@@ -23,7 +23,7 @@ public class RootController {
     @GetMapping("/login")
     public String login(HttpSession session, Model model) {
         if (isAuthorized(session)) {
-            return "redirect:/messages";
+            return "redirect:messages";
         }
         model.addAttribute("user", new User());
         return "login";
@@ -32,7 +32,7 @@ public class RootController {
     @GetMapping("/messages")
     public String getMessages(HttpSession session) {
         if (!isAuthorized(session))
-            return "redirect:/login";
+            return "redirect:login";
         return "messages";
     }
 
